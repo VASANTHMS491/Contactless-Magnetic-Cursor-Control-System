@@ -17,9 +17,9 @@
 
 ## 📖 Description
 
-A contactless cursor control system that uses multiple **analog Hall effect sensors (49E-type)** to detect the movement of a small permanent magnet. As the magnet moves, variations in magnetic field strength are detected across sensors, allowing the system to determine directional movement.
+A contactless cursor control system that uses multiple **digital Hall effect sensors (49E-type)** to detect the presence of a small permanent magnet. As the magnet moves over each sensor, the corresponding digital pin goes HIGH or LOW, allowing the system to determine directional movement.
 
-The ESP32 reads analog values from all sensors, determines the direction of magnet movement based on relative field changes, and transmits the data to a computer via **serial communication**. A Python script interprets this data and controls the cursor using `pyautogui`.
+The ESP32 reads digital values from all five sensors, determines which sensor is triggered, and transmits the data to a computer via **serial communication**. A Python script interprets this data and controls the cursor using `pyautogui` — including cursor movement and right-click actions.
 
 ---
 
@@ -29,8 +29,8 @@ The ESP32 reads analog values from all sensors, determines the direction of magn
 |---|---|
 | 🧲 **Contactless Control** | No physical touch required for cursor movement |
 | 📡 **Real-Time Detection** | Instant response to magnet position changes |
-| 🎯 **Direction Mapping** | Detects left, right, up, and down movement |
-| 🖱️ **Cursor Control** | Python script converts sensor data into mouse movement |
+| 🎯 **Direction Mapping** | Detects cursor movement across 4 sensors |
+| 🖱️ **Cursor & Right-Click** | Python script moves cursor and triggers right-click via a dedicated sensor |
 | 💰 **Low Cost & Scalable** | Built with affordable, off-the-shelf components |
 | ⚡ **Continuous Detection** | Detects movement instantly — no manual input needed |
 | 🔧 **Easy Implementation** | No complex hardware protocols required |
@@ -40,10 +40,10 @@ The ESP32 reads analog values from all sensors, determines the direction of magn
 ## 🔧 Hardware Components
 
 ### 1. ESP32
-Reads analog values from Hall effect sensors via ADC pins, determines directional movement, and transmits data to the PC via serial communication.
+Reads digital values from Hall effect sensors via GPIO pins, determines which sensor is triggered, and transmits data to the PC via serial communication.
 
-### 2. Analog Hall Effect Sensors — 49E-type
-Detect magnetic field strength and output a corresponding analog voltage. Multiple sensors are arranged spatially to determine the direction of magnet movement.
+### 2. Digital Hall Effect Sensors — 49E-type
+Detect the presence of a magnetic field and output a digital HIGH or LOW signal. Five sensors are arranged spatially — four for directional cursor movement and one dedicated to right-click.
 
 ### 3. Neodymium Magnet
 Acts as the primary input device. Moving the magnet above or around the sensor array produces directional control signals.
