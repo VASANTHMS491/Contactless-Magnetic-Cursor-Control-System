@@ -1,6 +1,17 @@
+<div align="center">
+
 # 🧲 Contactless Magnetic Cursor Control System
 
-> Real-time contactless cursor control using analog Hall effect sensors and ESP32 — powered by magnetic field sensing and Python-based mouse control.
+### Real-Time Contactless Cursor Control via Hall Effect Sensors & ESP32
+
+[![ESP32](https://img.shields.io/badge/ESP32-Dev%20Module-blue?style=flat-square&logo=espressif)](https://www.espressif.com/)
+[![Arduino](https://img.shields.io/badge/Arduino-IDE-00979D?style=flat-square&logo=arduino)](https://www.arduino.cc/)
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-Open%20Source-green?style=flat-square)](LICENSE)
+
+*Powered by magnetic field sensing and Python-based mouse control — no physical touch required.*
+
+</div>
 
 ---
 
@@ -16,13 +27,13 @@ The ESP32 reads analog values from all sensors, determines the direction of magn
 
 | Feature | Description |
 |---|---|
-| 🧲 Contactless Control | No physical touch required for cursor movement |
-| 📡 Real-Time Detection | Instant response to magnet position changes |
-| 🎯 Direction Mapping | Detects left, right, up, and down movement |
-| 🖱️ Cursor Control | Python script converts sensor data into mouse movement |
-| 💰 Low Cost & Scalable | Built with affordable, off-the-shelf components |
-| ⚡ Continuous Detection | Detects movement instantly — no manual input needed |
-| 🔧 Easy Implementation | No complex hardware protocols required |
+| 🧲 **Contactless Control** | No physical touch required for cursor movement |
+| 📡 **Real-Time Detection** | Instant response to magnet position changes |
+| 🎯 **Direction Mapping** | Detects left, right, up, and down movement |
+| 🖱️ **Cursor Control** | Python script converts sensor data into mouse movement |
+| 💰 **Low Cost & Scalable** | Built with affordable, off-the-shelf components |
+| ⚡ **Continuous Detection** | Detects movement instantly — no manual input needed |
+| 🔧 **Easy Implementation** | No complex hardware protocols required |
 
 ---
 
@@ -52,22 +63,27 @@ Used for prototyping the sensor array and all component connections.
 pip install pyserial pyautogui
 ```
 
+| Library | Purpose |
+|---|---|
+| `pyserial` | Reads serial data from the ESP32 |
+| `pyautogui` | Moves the cursor based on detected direction |
+
 ---
 
 ## 🔌 Pin Connections
 
 | Component | Pin | Connected To |
 |---|---|---|
-| Hall Sensor 1 (Left) | VCC | 3.3V (ESP32 Power) |
+| Hall Sensor 1 (Left) | VCC | 3.3V (ESP32) |
 | Hall Sensor 1 (Left) | GND | GND |
 | Hall Sensor 1 (Left) | Analog Output | GPIO34 (ADC Pin) |
-| Hall Sensor 2 (Right) | VCC | 3.3V (ESP32 Power) |
+| Hall Sensor 2 (Right) | VCC | 3.3V (ESP32) |
 | Hall Sensor 2 (Right) | GND | GND |
 | Hall Sensor 2 (Right) | Analog Output | GPIO35 (ADC Pin) |
-| Hall Sensor 3 (Up) | VCC | 3.3V (ESP32 Power) |
+| Hall Sensor 3 (Up) | VCC | 3.3V (ESP32) |
 | Hall Sensor 3 (Up) | GND | GND |
 | Hall Sensor 3 (Up) | Analog Output | GPIO32 (ADC Pin) |
-| Hall Sensor 4 (Down) | VCC | 3.3V (ESP32 Power) |
+| Hall Sensor 4 (Down) | VCC | 3.3V (ESP32) |
 | Hall Sensor 4 (Down) | GND | GND |
 | Hall Sensor 4 (Down) | Analog Output | GPIO33 (ADC Pin) |
 | ESP32 | VIN | 5V Power Supply |
@@ -173,7 +189,7 @@ Verify that the ESP32 boots up correctly (onboard LED or serial monitor output).
 2. Set the correct COM port in the Python script:
 
 ```python
-SERIAL_PORT = "COM3"   # Windows
+SERIAL_PORT = "COM3"          # Windows
 # SERIAL_PORT = "/dev/ttyUSB0"  # Linux / Mac
 ```
 
@@ -207,24 +223,24 @@ python magnetic_cursor.py
 
 ## 🛠️ Troubleshooting
 
-### ❌ Sensor not giving proper readings
+### ❌ Sensor Not Giving Proper Readings
 - Verify **AOUT is connected to an ADC-capable pin** (GPIO34, GPIO35, GPIO32, GPIO33)
 - Check that **VCC and GND connections are secure**
 - Ensure the **magnet is close enough** to the sensor — neodymium magnets typically need to be within 2–5 cm for reliable readings
 
-### 📉 Unstable or noisy sensor values
+### 📉 Unstable or Noisy Sensor Values
 - Provide a **stable 3.3V supply** to all sensors
 - Shield the sensor array from **nearby metal objects or other magnets**
 - Check all wiring for **loose connections**
 - Add a small delay in the Arduino loop to allow ADC readings to settle
 
-### 🖱️ Cursor not moving or moving erratically
+### 🖱️ Cursor Not Moving or Moving Erratically
 - Ensure the **Arduino IDE Serial Monitor is fully closed** before running the Python script
 - Verify the correct **COM port** is set in the Python script
 - Check that `pyserial` and `pyautogui` are both installed: `pip install pyserial pyautogui`
 - Increase the **sensitivity threshold** in the Python script if the cursor moves on its own without magnet movement
 
-### 🔌 ESP32 not detected in Arduino IDE
+### 🔌 ESP32 Not Detected in Arduino IDE
 - Install the **ESP32 board package**: `File → Preferences → Additional Boards Manager URLs`
   - Add: `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
   - Then go to `Tools → Board → Boards Manager` and search **ESP32**
