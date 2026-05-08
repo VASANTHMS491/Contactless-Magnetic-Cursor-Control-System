@@ -7,7 +7,7 @@
 [![ESP32](https://img.shields.io/badge/ESP32-Dev%20Module-blue?style=flat-square&logo=espressif)](https://www.espressif.com/)
 [![Arduino](https://img.shields.io/badge/Arduino-IDE-00979D?style=flat-square&logo=arduino)](https://www.arduino.cc/)
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-Open%20Source-green?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 *Powered by magnetic field sensing and Python-based mouse control — no physical touch required.*
 
@@ -262,4 +262,4 @@ contactless-magnetic-cursor/
 
 ## 📜 License
 
-This project is open-source. Feel free to use, modify, and distribute with attribution.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
