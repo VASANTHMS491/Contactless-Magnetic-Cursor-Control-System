@@ -17,9 +17,9 @@
 
 ## 📖 Description
 
-A contactless cursor control system that uses multiple **digital Hall effect sensors (49E-type)** to detect the presence of a small permanent magnet. As the magnet moves over each sensor, the corresponding digital pin goes HIGH or LOW, allowing the system to determine directional movement.
+A contactless cursor control system that uses five **digital Hall effect sensors (49E-type)** to detect the presence of a small permanent magnet. As the magnet moves over each sensor, the corresponding digital pin goes HIGH or LOW, allowing the system to determine which action to perform.
 
-The ESP32 reads digital values from all five sensors, determines which sensor is triggered, and transmits the data to a computer via **serial communication**. A Python script interprets this data and controls the cursor using `pyautogui` — including cursor movement and right-click actions.
+The ESP32 reads digital values from all five sensors and transmits the data to a computer via **serial communication**. A Python script interprets this data and controls the mouse using `pyautogui` — four sensors handle cursor movement and one is dedicated to right-click.
 
 ---
 
@@ -29,8 +29,8 @@ The ESP32 reads digital values from all five sensors, determines which sensor is
 |---|---|
 | 🧲 **Contactless Control** | No physical touch required for cursor movement |
 | 📡 **Real-Time Detection** | Instant response to magnet position changes |
-| 🎯 **Direction Mapping** | Detects cursor movement across 4 sensors |
-| 🖱️ **Cursor & Right-Click** | Python script moves cursor and triggers right-click via a dedicated sensor |
+| 🎯 **Direction Mapping** | Four sensors detect cursor movement in four directions |
+| 🖱️ **Cursor & Right-Click** | Python script moves the cursor and triggers right-click via a dedicated sensor |
 | 💰 **Low Cost & Scalable** | Built with affordable, off-the-shelf components |
 | ⚡ **Continuous Detection** | Detects movement instantly — no manual input needed |
 | 🔧 **Easy Implementation** | No complex hardware protocols required |
@@ -40,13 +40,13 @@ The ESP32 reads digital values from all five sensors, determines which sensor is
 ## 🔧 Hardware Components
 
 ### 1. ESP32
-Reads digital values from Hall effect sensors via GPIO pins, determines which sensor is triggered, and transmits data to the PC via serial communication.
+Reads digital values from all five Hall effect sensors via GPIO pins, determines which sensor is triggered, and transmits the result to the PC via serial communication.
 
-### 2. Digital Hall Effect Sensors — 49E-type
-Detect the presence of a magnetic field and output a digital HIGH or LOW signal. Five sensors are arranged spatially — four for directional cursor movement and one dedicated to right-click.
+### 2. Digital Hall Effect Sensors — 49E-type (× 5)
+Detect the presence of a magnetic field and output a digital HIGH or LOW signal. Four sensors handle cursor movement; one is dedicated to mouse right-click.
 
 ### 3. Neodymium Magnet
-Acts as the primary input device. Moving the magnet above or around the sensor array produces directional control signals.
+Acts as the primary input device. Hovering or moving the magnet over a sensor triggers the corresponding action.
 
 ### 4. Breadboard & Jumper Wires
 Used for prototyping the sensor array and all component connections.
@@ -66,69 +66,73 @@ pip install pyserial pyautogui
 | Library | Purpose |
 |---|---|
 | `pyserial` | Reads serial data from the ESP32 |
-| `pyautogui` | Moves the cursor based on detected direction |
+| `pyautogui` | Moves the cursor and triggers mouse clicks |
 
 ---
 
 ## 🔌 Pin Connections
 
-| Component | Pin | Connected To |
-|---|---|---|
-| Hall Sensor 1 (Left) | VCC | 3.3V (ESP32) |
-| Hall Sensor 1 (Left) | GND | GND |
-| Hall Sensor 1 (Left) | Analog Output | GPIO34 (ADC Pin) |
-| Hall Sensor 2 (Right) | VCC | 3.3V (ESP32) |
-| Hall Sensor 2 (Right) | GND | GND |
-| Hall Sensor 2 (Right) | Analog Output | GPIO35 (ADC Pin) |
-| Hall Sensor 3 (Up) | VCC | 3.3V (ESP32) |
-| Hall Sensor 3 (Up) | GND | GND |
-| Hall Sensor 3 (Up) | Analog Output | GPIO32 (ADC Pin) |
-| Hall Sensor 4 (Down) | VCC | 3.3V (ESP32) |
-| Hall Sensor 4 (Down) | GND | GND |
-| Hall Sensor 4 (Down) | Analog Output | GPIO33 (ADC Pin) |
-| ESP32 | VIN | 5V Power Supply |
-| ESP32 | GND | Common Ground |
+All five Hall effect sensors output a **digital signal** read directly by ESP32 GPIO pins.
+
+```cpp
+int pins[5] = {32, 33, 25, 26, 27};
+// GPIO26 → Right-click
+// Remaining four pins → Cursor movement
+```
+
+| Sensor | Role | GPIO Pin |
+|---|---|:---:|
+| Hall Sensor 1 | Cursor Movement | GPIO32 |
+| Hall Sensor 2 | Cursor Movement | GPIO33 |
+| Hall Sensor 3 | Cursor Movement | GPIO25 |
+| Hall Sensor 4 | **Right-Click** 🖱️ | GPIO26 |
+| Hall Sensor 5 | Cursor Movement | GPIO27 |
+| ESP32 VIN | Power | 5V Supply |
+| ESP32 GND | Ground | Common GND |
+
+> All sensor VCC pins connect to **3.3V** on the ESP32. All GND pins share a **common ground**.
 
 ### Wiring Diagram
 
 ```
-  +---------------------+     +---------------------+
-  |  Hall Sensor 1      |     |  Hall Sensor 2      |
-  |     (LEFT)          |     |     (RIGHT)         |
-  |                     |     |                     |
-  |  VCC  ── 3.3V ──────┐     |  VCC  ── 3.3V ──────┤
-  |  GND  ── GND  ───── ┤     |  GND  ── GND  ───── ┤
-  |  AOUT ── GPIO34 ────┤     |  AOUT ── GPIO35 ────┤
-  +---------------------+     +---------------------+
+  +-------------------+   +-------------------+   +-------------------+
+  |   Hall Sensor 1   |   |   Hall Sensor 2   |   |   Hall Sensor 3   |
+  |  (Cursor Move)    |   |  (Cursor Move)    |   |  (Cursor Move)    |
+  |                   |   |                   |   |                   |
+  |  VCC ── 3.3V      |   |  VCC ── 3.3V      |   |  VCC ── 3.3V      |
+  |  GND ── GND       |   |  GND ── GND       |   |  GND ── GND       |
+  |  DOUT── GPIO32    |   |  DOUT── GPIO33    |   |  DOUT── GPIO25    |
+  +-------------------+   +-------------------+   +-------------------+
 
-  +---------------------+     +---------------------+
-  |  Hall Sensor 3      |     |  Hall Sensor 4      |
-  |      (UP)           |     |     (DOWN)          |
-  |                     |     |                     |
-  |  VCC  ── 3.3V ──────┤     |  VCC  ── 3.3V ──────┤
-  |  GND  ── GND  ───── ┤     |  GND  ── GND  ───── ┤
-  |  AOUT ── GPIO32 ────┤     |  AOUT ── GPIO33 ────┤
-  +---------------------+     +---------------------+
+  +-------------------+   +-------------------+
+  |   Hall Sensor 4   |   |   Hall Sensor 5   |
+  |  (RIGHT-CLICK) 🖱️ |   |  (Cursor Move)    |
+  |                   |   |                   |
+  |  VCC ── 3.3V      |   |  VCC ── 3.3V      |
+  |  GND ── GND       |   |  GND ── GND       |
+  |  DOUT── GPIO26    |   |  DOUT── GPIO27    |
+  +-------------------+   +-------------------+
               |
-  +-----------+----------------------------+
-  |                  ESP32                 |
-  |                                        |
-  |  GPIO34 ── Sensor 1 (Left)             |
-  |  GPIO35 ── Sensor 2 (Right)            |
-  |  GPIO32 ── Sensor 3 (Up)               |
-  |  GPIO33 ── Sensor 4 (Down)             |
-  |  VIN    ── Power Supply                |
-  |  GND    ── Common Ground               |
-  +----------------------------------------+
+  +-----------+------------------------------+
+  |                   ESP32                  |
+  |                                          |
+  |  GPIO32 ── Sensor 1 (Cursor)             |
+  |  GPIO33 ── Sensor 2 (Cursor)             |
+  |  GPIO25 ── Sensor 3 (Cursor)             |
+  |  GPIO26 ── Sensor 4 (Right-Click)        |
+  |  GPIO27 ── Sensor 5 (Cursor)             |
+  |  VIN    ── Power Supply                  |
+  |  GND    ── Common Ground                 |
+  +------------------------------------------+
               |
          USB Serial
               |
-  +-----------+----------------------------+
-  |         PC — Python Script             |
-  |                                        |
-  |  pyserial  ── reads serial data        |
-  |  pyautogui ── moves cursor             |
-  +----------------------------------------+
+  +-----------+------------------------------+
+  |          PC — Python Script              |
+  |                                          |
+  |  pyserial  ── reads serial data          |
+  |  pyautogui ── moves cursor / clicks      |
+  +------------------------------------------+
 ```
 
 ---
@@ -144,7 +148,7 @@ pip install pyserial pyautogui
 5. Open the sketch file: `magnetic_cursor.ino`
 6. Click **Upload** ⬆️
 
-> ⚠️ Ensure all Hall effect sensors are correctly connected to their respective ADC pins before uploading.
+> ⚠️ Ensure all five Hall effect sensors are correctly connected to their respective GPIO pins before uploading.
 
 ---
 
@@ -155,21 +159,10 @@ Make the following connections for each sensor:
 ```
 Sensor VCC   →  3.3V (ESP32)
 Sensor GND   →  GND
-Sensor AOUT  →  GPIO34 / GPIO35 / GPIO32 / GPIO33
+Sensor DOUT  →  GPIO32 / GPIO33 / GPIO25 / GPIO26 / GPIO27
 ```
 
-Arrange the four sensors in a **2×2 cross pattern** on the breadboard:
-
-```
-        [Sensor 3 — Up]
-              ↑
-[Sensor 1]  ←  →  [Sensor 2]
-   Left               Right
-              ↓
-        [Sensor 4 — Down]
-```
-
-> ⚠️ All sensors must share a **common ground** with the ESP32 for correct ADC readings.
+> ⚠️ All sensors must share a **common ground** with the ESP32 for correct readings.
 
 ---
 
@@ -189,7 +182,7 @@ Verify that the ESP32 boots up correctly (onboard LED or serial monitor output).
 2. Set the correct COM port in the Python script:
 
 ```python
-SERIAL_PORT = "COM3"          # Windows
+SERIAL_PORT = "COM3"           # Windows
 # SERIAL_PORT = "/dev/ttyUSB0"  # Linux / Mac
 ```
 
@@ -204,41 +197,41 @@ python magnetic_cursor.py
 ### Step 5 — Test the System
 
 - Hold the **neodymium magnet** above the sensor array
-- Move it **left, right, up, or down** over the corresponding sensor
-- The Python script will detect the dominant sensor reading and move the cursor accordingly
+- Move it over each of the four cursor sensors to control mouse movement
+- Hover over **Sensor 4 (GPIO26)** to trigger a **right-click**
 - Open the serial monitor (before running Python) to verify raw sensor values are being transmitted correctly
 
 ---
 
 ## 📝 Notes & Tips
 
-- **Common ground is essential** — all sensors and the ESP32 must share a ground reference for correct ADC readings
-- The sensors output an **analog voltage proportional to magnetic field strength** — closer magnet = stronger signal = higher or lower voltage depending on polarity
-- Always use **ADC-capable pins** — GPIO34, GPIO35, GPIO32, GPIO33 are all input-only ADC pins on the ESP32, ideal for sensing
-- **Magnet orientation matters** — flip the magnet if sensor readings are inverted compared to expected direction
-- Use a **stable power supply** — voltage fluctuations will cause noisy ADC readings and erratic cursor movement
-- **Keep the magnet away from the sensors when not in use** — a resting magnet above the array will produce a constant offset in all readings
+- **Common ground is essential** — all sensors and the ESP32 must share a ground reference for correct readings
+- The sensors output a **digital HIGH or LOW** based on magnet presence — no analog thresholding needed
+- **Magnet orientation matters** — flip the magnet if a sensor is not triggering as expected
+- Use a **stable power supply** — voltage fluctuations can cause false triggers
+- **Keep the magnet away from sensors when not in use** — an idle magnet resting over the array may cause unintended inputs
+- **GPIO26 is reserved for right-click** — place this sensor in an easily reachable position on the glove or fixture
 
 ---
 
 ## 🛠️ Troubleshooting
 
-### ❌ Sensor Not Giving Proper Readings
-- Verify **AOUT is connected to an ADC-capable pin** (GPIO34, GPIO35, GPIO32, GPIO33)
+### ❌ Sensor Not Triggering
 - Check that **VCC and GND connections are secure**
-- Ensure the **magnet is close enough** to the sensor — neodymium magnets typically need to be within 2–5 cm for reliable readings
+- Ensure the **magnet is close enough** to the sensor surface
+- **Flip the magnet** — the sensor may only respond to one pole
 
-### 📉 Unstable or Noisy Sensor Values
+### 📉 False or Erratic Triggers
 - Provide a **stable 3.3V supply** to all sensors
 - Shield the sensor array from **nearby metal objects or other magnets**
 - Check all wiring for **loose connections**
-- Add a small delay in the Arduino loop to allow ADC readings to settle
+- Add a small delay in the Arduino loop to debounce rapid triggers
 
-### 🖱️ Cursor Not Moving or Moving Erratically
+### 🖱️ Cursor Not Moving or Right-Click Not Working
 - Ensure the **Arduino IDE Serial Monitor is fully closed** before running the Python script
 - Verify the correct **COM port** is set in the Python script
-- Check that `pyserial` and `pyautogui` are both installed: `pip install pyserial pyautogui`
-- Increase the **sensitivity threshold** in the Python script if the cursor moves on its own without magnet movement
+- Confirm that `pyserial` and `pyautogui` are both installed: `pip install pyserial pyautogui`
+- Double-check that **GPIO26** is correctly wired to the right-click sensor
 
 ### 🔌 ESP32 Not Detected in Arduino IDE
 - Install the **ESP32 board package**: `File → Preferences → Additional Boards Manager URLs`
