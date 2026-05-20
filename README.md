@@ -17,9 +17,9 @@
 
 ## 📖 Description
 
-A contactless cursor control system that uses five **digital Hall effect sensors (49E-type)** to detect the presence of a small permanent magnet. As the magnet moves over each sensor, the corresponding digital pin goes HIGH or LOW, allowing the system to determine which action to perform.
+A contactless cursor control system that uses five **49E Hall effect sensors** to detect the presence of a small permanent magnet. Each sensor produces an analog voltage that changes according to the magnetic field strength. The ESP32 continuously reads these analog values using its built-in ADC (`analogRead()`), allowing the system to detect when a magnet is placed near a sensor.
 
-The ESP32 reads digital values from all five sensors and transmits the data to a computer via **serial communication**. A Python script interprets this data and controls the mouse using `pyautogui` — four sensors handle cursor movement and one is dedicated to right-click.
+The ESP32 processes readings from all five sensors and transmits the detected sensor information to a computer via **serial communication**. A Python script interprets this data and controls the mouse using `pyautogui` — four sensors handle cursor movement and one is dedicated to right-click.
 
 ---
 
@@ -72,7 +72,7 @@ pip install pyserial pyautogui
 
 ## 🔌 Pin Connections
 
-All five Hall effect sensors output a **digital signal** read directly by ESP32 GPIO pins.
+All five Hall effect sensors output an **analog voltage signal** read by the ESP32 ADC pins using `analogRead()`.
 
 ```cpp
 int pins[5] = {32, 33, 25, 26, 27};
